@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
-import BannerAd from './components/BannerAd';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Tools from './pages/Tools';
@@ -69,9 +68,6 @@ const App: React.FC = () => {
         
         {/* Header with Logo and Navigation */}
         <Header darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />
-
-        {/* Banner Ad Below Header */}
-        <BannerAd />
 
         {/* Background blobs */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">

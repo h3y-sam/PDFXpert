@@ -4,16 +4,12 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Zap, Layers, CheckCircle2, Lock, Cpu } from 'lucide-react';
 import { TOOLS } from '../constants';
 import ToolCard from '../components/ToolCard';
-import SidebarAd from '../components/SidebarAd';
 
 const Home: React.FC = () => {
   const popularTools = TOOLS.filter(t => t.popular);
 
   return (
     <div className="flex flex-col w-full overflow-hidden">
-      <div className="flex flex-row w-full gap-6 px-4 sm:px-6 lg:px-8">
-        {/* Main Content */}
-        <div className="flex-1 min-w-0">
       {/* Hero Section */}
       <section className="relative pt-20 pb-32 lg:pt-32 lg:pb-40 px-4 sm:px-6 lg:px-8 w-full overflow-hidden">
         {/* Background Gradients */}
@@ -148,13 +144,6 @@ const Home: React.FC = () => {
             </div>
          </div>
       </section>
-        </div>
-
-        {/* Sidebar with Ad - Hidden on mobile, visible on lg+ screens */}
-        <aside className="hidden lg:block w-48 flex-shrink-0">
-          <SidebarAd />
-        </aside>
-      </div>
     </div>
   );
 };

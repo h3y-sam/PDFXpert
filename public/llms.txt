@@ -15,6 +15,7 @@
 - [Protect PDF](https://pdfxpert.pages.dev/tools/protect): Encrypt PDF files with client-side standard AES password protection.
 - [Unlock PDF](https://pdfxpert.pages.dev/tools/unlock): Remove password protection from authenticated PDF files.
 - [Watermark PDF](https://pdfxpert.pages.dev/tools/watermark): Apply customizable text or image watermarks with opacity and rotation controls.
+- [Passport Photo Sheet Maker](https://pdfxpert.pages.dev/tools/passport-photo-maker): Tile passport and visa photos onto A4 / 4x6 sheets with cutting guides and 1-click studio printing.
 - [Sign & Edit PDF](https://pdfxpert.pages.dev/tools/edit-pdf): Draw signatures, place text annotations, shapes, and redact sensitive information.
 
 ## Security & Architecture

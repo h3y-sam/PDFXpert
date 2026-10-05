@@ -38,6 +38,7 @@ const AIPDFTool = lazy(() => import('./pages/tools/AIPDFTool'));
 const ScannerTool = lazy(() => import('./pages/tools/ScannerTool'));
 const PDFReaderTool = lazy(() => import('./pages/tools/PDFReaderTool'));
 const PDFConverterTool = lazy(() => import('./pages/tools/PDFConverterTool'));
+const PassportPhotoMakerTool = lazy(() => import('./pages/tools/PassportPhotoMakerTool'));
 const ComingSoon = lazy(() => import('./pages/tools/ComingSoon'));
 
 import { Toaster } from 'react-hot-toast';
@@ -144,6 +145,11 @@ const App: React.FC = () => {
                   <Route path="/tools/translate-pdf" element={<AIPDFTool />} />
                   <Route path="/tools/question-generator" element={<AIPDFTool />} />
                   <Route path="/tools/ai-quiz-generator" element={<AIPDFTool />} />
+
+                  {/* Studio Print & Photo Tools */}
+                  <Route path="/tools/passport-photo-maker" element={<PassportPhotoMakerTool />} />
+                  <Route path="/tools/passport-photo" element={<PassportPhotoMakerTool />} />
+                  <Route path="/tools/print-photo" element={<PassportPhotoMakerTool />} />
 
                   {/* PDF Scanner & Viewer */}
                   <Route path="/tools/scan" element={<ScannerTool />} />

@@ -39,6 +39,13 @@
       "description": "Converts PDF to Word, Excel, PPT, JPG, PNG, HTML, or plain text.",
       "url": "https://pdfxpert.pages.dev/tools/pdf-converter",
       "category": "convert"
+    },
+    {
+      "id": "passport-photo-maker",
+      "name": "Passport Photo Sheet Maker",
+      "description": "Tiles passport & visa photos onto A4 / 4x6 sheets with cutting guides and 1-click studio printing.",
+      "url": "https://pdfxpert.pages.dev/tools/passport-photo-maker",
+      "category": "print"
     }
   ]
 }

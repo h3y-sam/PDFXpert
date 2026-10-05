@@ -6,11 +6,22 @@ import {
   Hash, FileJson, FileCode, Speaker, Music, Video, Database, 
   FileSpreadsheet, Monitor, FolderArchive, Wrench, Layers, Type,
   FileDigit, FileType, Code, Mic, Key, Settings, PenTool, Crop, 
-  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge
+  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge, Printer
 } from 'lucide-react';
 import React from 'react';
 
 export const TOOLS: ToolConfig[] = [
+  // --- STUDIO & PRINT TOOLS ---
+  {
+    id: ToolType.PASSPORT_PHOTO_MAKER,
+    title: 'Passport Photo Sheet Maker',
+    description: 'Tile passport & visa photos on A4 or 4x6 sheet with cut lines for studio printing.',
+    icon: 'Printer',
+    color: 'text-emerald-500',
+    path: '/tools/passport-photo-maker',
+    popular: true,
+    category: ToolCategory.CONVERT_TO
+  },
   // --- ORGANIZE PDF ---
   {
     id: ToolType.MERGE,
@@ -369,7 +380,8 @@ export const getIcon = (name: string, className?: string) => {
     'Archive': <Archive {...props} />,
     'Smartphone': <Smartphone {...props} />,
     'FileOutput': <FileOutput {...props} />,
-    'Gauge': <Gauge {...props} />
+    'Gauge': <Gauge {...props} />,
+    'Printer': <Printer {...props} />
   };
 
   return icons[name] || <FileText {...props} />;

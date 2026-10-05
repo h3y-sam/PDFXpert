@@ -116,10 +116,44 @@ export interface ToolConfig {
   category: ToolCategory;
 }
 
+export interface ProcessingStep {
+  id: string;
+  label: string;
+  status: 'pending' | 'active' | 'completed' | 'failed';
+  detail?: string;
+  timestamp?: string;
+}
+
+export interface TransparencyLog {
+  id: string;
+  text: string;
+  type: 'info' | 'secure' | 'crypto' | 'cpu' | 'success' | 'warn';
+  timestamp: string;
+}
+
 export interface ProcessingState {
   isProcessing: boolean;
-  progress: number;
+  progress: number; // 0 to 100
+  stage?: string;
+  currentStepIndex?: number;
+  totalSteps?: number;
+  steps?: ProcessingStep[];
+  logs?: TransparencyLog[];
+  memoryMetric?: string;
+  processingSpeed?: string;
+  securityProof?: string;
   error: string | null;
   resultUrl: string | null;
   resultName: string | null;
+}
+
+export type PremiumTier = 'free' | 'pro' | 'enterprise';
+
+export interface LicenseInfo {
+  tier: PremiumTier;
+  couponCode?: string;
+  activatedAt?: string;
+  expiresAt?: string; // 'lifetime' or ISO string
+  signature?: string;
+  discountApplied?: number;
 }

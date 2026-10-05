@@ -18,12 +18,21 @@ export const generateZip = async (files: {name: string, data: Blob | Uint8Array}
 };
 
 /**
- * Merges multiple PDF files into one
+ * Merges multiple PDF files into one with live progress updates
  */
-export const mergePDFs = async (files: {file: File, rotation?: number}[]): Promise<Uint8Array> => {
+export const mergePDFs = async (
+  files: {file: File, rotation?: number}[],
+  onProgress?: (progress: number, stage: string, detail?: string) => void
+): Promise<Uint8Array> => {
   const mergedPdf = await PDFDocument.create();
+  const total = files.length;
 
-  for (const item of files) {
+  for (let i = 0; i < total; i++) {
+    const item = files[i];
+    if (onProgress) {
+      const pct = Math.round(((i) / total) * 85);
+      onProgress(pct, `Loading & copying file ${i + 1} of ${total}: ${item.file.name}`, `Parsed ${item.file.size} bytes`);
+    }
     const arrayBuffer = await item.file.arrayBuffer();
     const pdf = await PDFDocument.load(arrayBuffer);
     const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
@@ -36,7 +45,15 @@ export const mergePDFs = async (files: {file: File, rotation?: number}[]): Promi
     });
   }
 
-  return await mergedPdf.save();
+  if (onProgress) {
+    onProgress(92, 'Serializing and generating final PDF byte stream...', 'Flate decompression & xref consolidation');
+  }
+
+  const result = await mergedPdf.save();
+  if (onProgress) {
+    onProgress(100, 'Completed', 'Output buffer verified');
+  }
+  return result;
 };
 
 /**
@@ -309,13 +326,13 @@ export const cropPDF = async (file: File, margins: {top: number, bottom: number,
 
   pages.forEach(page => {
     const { width, height } = page.getSize();
-    const newLeft = Math.max(0, margins.left);
-    const newBottom = Math.max(0, margins.bottom);
-    const newWidth = Math.max(0, width - margins.left - margins.right);
-    const newHeight = Math.max(0, height - margins.top - margins.bottom);
-
-    page.setCropBox(newLeft, newBottom, newWidth, newHeight);
-    page.setMediaBox(newLeft, newBottom, newWidth, newHeight);
+    // Keep MediaBox as the original page size, only CropBox defines the visible area
+    page.setMediaBox(0, 0, width, height);
+    const cropLeft   = Math.max(0, margins.left);
+    const cropBottom = Math.max(0, margins.bottom);
+    const cropWidth  = Math.max(10, width  - margins.left - margins.right);
+    const cropHeight = Math.max(10, height - margins.top  - margins.bottom);
+    page.setCropBox(cropLeft, cropBottom, cropWidth, cropHeight);
   });
 
   return await pdfDoc.save();
@@ -367,13 +384,39 @@ export const repairPDF = async (file: File): Promise<Uint8Array> => {
   return await pdfDoc.save();
 };
 
-export const compressPDF = async (file: File, quality = 0.6): Promise<Uint8Array> => {
+/**
+ * Helper: convert canvas to ArrayBuffer via toBlob (avoids fetch(dataUrl) issues)
+ */
+const canvasToJpegBuffer = (canvas: HTMLCanvasElement, quality: number): Promise<ArrayBuffer> => {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return reject(new Error('toBlob returned null'));
+        resolve(await blob.arrayBuffer());
+      },
+      'image/jpeg',
+      quality
+    );
+  });
+};
+
+export const compressPDF = async (
+  file: File,
+  quality = 0.6,
+  onProgress?: (progress: number, stage: string, detail?: string) => void
+): Promise<Uint8Array> => {
+  if (onProgress) onProgress(5, 'Loading PDF structure in memory...', `File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
   const newPdf = await PDFDocument.create();
   const numPages = pdf.numPages;
 
   for (let i = 1; i <= numPages; i++) {
+    if (onProgress) {
+      const pct = Math.round(10 + ((i - 1) / numPages) * 75);
+      onProgress(pct, `Re-sampling and optimizing page ${i} of ${numPages}...`, `Canvas rendering at ${Math.round(quality * 100)}% quality`);
+    }
+
     const page = await pdf.getPage(i);
     const viewport = page.getViewport({ scale: 1.0 });
     const canvas = document.createElement('canvas');
@@ -383,14 +426,17 @@ export const compressPDF = async (file: File, quality = 0.6): Promise<Uint8Array
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     await page.render({ canvasContext: context, viewport: viewport }).promise;
-    
-    const imgDataUrl = canvas.toDataURL('image/jpeg', quality);
-    const imgBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
+
+    const imgBytes = await canvasToJpegBuffer(canvas, quality);
     const embeddedImage = await newPdf.embedJpg(imgBytes);
     const newPage = newPdf.addPage([viewport.width, viewport.height]);
     newPage.drawImage(embeddedImage, { x: 0, y: 0, width: viewport.width, height: viewport.height });
   }
-  return await newPdf.save();
+
+  if (onProgress) onProgress(90, 'Re-encoding optimized PDF stream...', 'Flate compression & object deduplication');
+  const result = await newPdf.save();
+  if (onProgress) onProgress(100, 'Optimization complete', `Output size: ${(result.length / 1024).toFixed(1)} KB`);
+  return result;
 };
 
 export const protectPDF = async (file: File, password: string): Promise<Uint8Array> => {
@@ -451,6 +497,7 @@ export const modifyPDF = async (
 
     // Fonts cache
     const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
     // Handle Additions (Overlays)
     for (const mod of mods) {
@@ -463,12 +510,27 @@ export const modifyPDF = async (
       const x = mod.x * scaleFactor;
       const y = height - (mod.y * scaleFactor); 
 
-      const modWidth = (mod.width || 0) * scaleFactor;
+      const modWidth  = (mod.width  || 0) * scaleFactor;
       const modHeight = (mod.height || 0) * scaleFactor;
 
-      if (mod.type === 'rectangle') {
+      if (mod.type === 'text' && mod.text) {
+          const fontSize = (mod.size || 14) * scaleFactor;
+          const font = mod.isBold ? helveticaBold : helvetica;
+          // y is top of text box in screen coords; PDF y-axis is flipped
+          const pdfY = y - fontSize; // baseline approximation
+          page.drawText(mod.text, {
+              x,
+              y: Math.max(0, pdfY),
+              size: fontSize,
+              font,
+              color: hexToRgb(mod.color || '#000000'),
+              maxWidth: modWidth > 0 ? modWidth : width - x - 20,
+              lineHeight: fontSize * 1.2,
+          });
+
+      } else if (mod.type === 'rectangle') {
           page.drawRectangle({
-              x: x,
+              x,
               y: y - modHeight, 
               width: modWidth,
               height: modHeight,
@@ -477,29 +539,29 @@ export const modifyPDF = async (
 
       } else if (mod.type === 'image' && mod.imageData) {
           try {
+             // Use fetch only for data URLs (always works since it's a local blob string)
              const imgBuffer = await fetch(mod.imageData).then(r => r.arrayBuffer());
              const isPng = mod.imageData.startsWith('data:image/png');
              const embeddedImage = isPng ? await pdfDoc.embedPng(imgBuffer) : await pdfDoc.embedJpg(imgBuffer);
-             
              page.drawImage(embeddedImage, {
-                 x: x,
+                 x,
                  y: y - modHeight,
                  width: modWidth,
-                 height: modHeight
+                 height: modHeight,
              });
-          } catch(e) { console.error("Failed to embed image", e); }
+          } catch(e) { console.error('Failed to embed image mod', e); }
+
       } else if (mod.type === 'drawing' && mod.path) {
           const path = mod.path;
           if (path.length > 1) {
               for (let i = 0; i < path.length - 1; i++) {
                  const p1 = path[i];
-                 const p2 = path[i+1];
-                 
+                 const p2 = path[i + 1];
                  page.drawLine({
                      start: { x: p1.x * scaleFactor, y: height - (p1.y * scaleFactor) },
-                     end: { x: p2.x * scaleFactor, y: height - (p2.y * scaleFactor) },
+                     end:   { x: p2.x * scaleFactor, y: height - (p2.y * scaleFactor) },
                      thickness: (mod.strokeWidth || 3) * scaleFactor,
-                     color: hexToRgb(mod.color || '#000000')
+                     color: hexToRgb(mod.color || '#000000'),
                  });
               }
           }

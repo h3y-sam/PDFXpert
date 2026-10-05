@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
-import { ArrowRight, Download, Loader2, Eraser, PenTool, MousePointer2, Trash2, Square, Hand, RotateCcw, Feather } from 'lucide-react';
+import { ArrowRight, Download, Loader2, Eraser, PenTool, MousePointer2, Trash2, Square, Hand, RotateCcw, Feather, Type } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import ToolContainer from '../ToolContainer';
 import FileUploader from '../../components/FileUploader';
@@ -11,7 +11,7 @@ import { PDFFile, ProcessingState } from '../../types';
 import { renderPageToImage, modifyPDF, PDFModification, getPageCount } from '../../services/pdfService';
 import SignatureModal from '../../components/SignatureModal';
 
-type Mode = 'select' | 'pan' | 'redact' | 'draw' | 'eraser';
+type Mode = 'select' | 'pan' | 'redact' | 'draw' | 'eraser' | 'text';
 
 interface UIModification extends PDFModification {
   id: string;
@@ -28,6 +28,12 @@ const EditPDFTool: React.FC = () => {
   const [mods, setMods] = useState<UIModification[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   
+  // Text tool state
+  const [pendingTextPos, setPendingTextPos] = useState<{x: number, y: number} | null>(null);
+  const [pendingText, setPendingText] = useState('');
+  const [fontSize, setFontSize] = useState(18);
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
+
   // Signature Modal
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
 
@@ -128,6 +134,14 @@ const EditPDFTool: React.FC = () => {
 
     const coords = getCoords(e);
     
+    if (mode === 'text') {
+      setPendingTextPos(coords);
+      setPendingText('');
+      // Focus textarea after render
+      setTimeout(() => textInputRef.current?.focus(), 50);
+      return;
+    }
+
     if (mode === 'draw' || mode === 'eraser') {
       setIsDragging(true);
       setCurrentPath([{ x: coords.x, y: coords.y }]);
@@ -174,15 +188,13 @@ const EditPDFTool: React.FC = () => {
         return m;
       }));
     } else if (mode === 'select' && selectedId && dragStart) {
+       // Capture dx/dy before the setState call to avoid stale closure
        const dx = coords.x - dragStart.x;
        const dy = coords.y - dragStart.y;
-       setMods(prev => prev.map(m => {
-         if (m.id === selectedId) {
-           return { ...m, x: m.x + dx, y: m.y + dy };
-         }
-         return m;
-       }));
-       setDragStart(coords); 
+       setMods(prev => prev.map(m =>
+         m.id === selectedId ? { ...m, x: m.x + dx, y: m.y + dy } : m
+       ));
+       setDragStart(coords);
     }
   };
 
@@ -293,6 +305,7 @@ const EditPDFTool: React.FC = () => {
                 <button onClick={() => setMode('pan')} className={`p-2 rounded-md transition-all ${mode === 'pan' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Pan / Scroll"><Hand className="w-5 h-5" /></button>
                 <button onClick={() => setMode('select')} className={`p-2 rounded-md transition-all ${mode === 'select' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Select & Move"><MousePointer2 className="w-5 h-5" /></button>
                 <button onClick={() => setIsSignatureModalOpen(true)} className="p-2 rounded-md transition-all text-gray-500 dark:text-gray-400 hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-slate-600" title="Create Signature"><Feather className="w-5 h-5" /></button>
+                <button onClick={() => { setMode('text'); setPendingTextPos(null); }} className={`p-2 rounded-md transition-all ${mode === 'text' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Add Text"><Type className="w-5 h-5" /></button>
                 <button onClick={() => setMode('draw')} className={`p-2 rounded-md transition-all ${mode === 'draw' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Freehand Draw"><PenTool className="w-5 h-5" /></button>
                 <button onClick={() => setMode('eraser')} className={`p-2 rounded-md transition-all ${mode === 'eraser' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Eraser"><Eraser className="w-5 h-5" /></button>
                 <button onClick={() => setMode('redact')} className={`p-2 rounded-md transition-all ${mode === 'redact' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900'}`} title="Redact Box"><Square className="w-5 h-5" /></button>
@@ -301,11 +314,23 @@ const EditPDFTool: React.FC = () => {
              <div className="h-8 w-px bg-gray-300 dark:bg-slate-600"></div>
 
              {/* Style Controls */}
-             <div className="flex items-center gap-4">
-               {mode !== 'eraser' && (
+             <div className="flex items-center gap-3">
+               {mode !== 'eraser' && mode !== 'redact' && (
                   <div className="flex items-center gap-2" title="Color">
                     <input type="color" value={color} onChange={(e) => { setColor(e.target.value); updateSelectedStyle('color', e.target.value); }} className="w-8 h-8 rounded cursor-pointer border-0 p-0 bg-transparent" />
                   </div>
+               )}
+               {mode === 'text' && (
+                 <div className="flex items-center gap-1.5">
+                   <span className="text-xs text-gray-500 dark:text-gray-400">Size:</span>
+                   <input
+                     type="number"
+                     min={8} max={72}
+                     value={fontSize}
+                     onChange={e => setFontSize(Math.max(8, Math.min(72, parseInt(e.target.value) || 18)))}
+                     className="w-14 text-center text-sm border border-gray-200 dark:border-slate-600 rounded-lg p-1 dark:bg-slate-700 dark:text-white outline-none"
+                   />
+                 </div>
                )}
              </div>
 
@@ -326,7 +351,7 @@ const EditPDFTool: React.FC = () => {
           </div>
 
           {/* Editor Canvas */}
-          <div ref={containerRef} className={`relative overflow-auto bg-gray-100 dark:bg-slate-900 p-8 rounded-xl min-h-[600px] flex justify-center items-start shadow-inner border border-gray-200 dark:border-slate-700 ${mode === 'pan' ? 'cursor-grab active:cursor-grabbing' : ''}`}>
+          <div ref={containerRef} className={`relative overflow-auto bg-gray-100 dark:bg-slate-900 p-8 rounded-xl min-h-[600px] flex justify-center items-start shadow-inner border border-gray-200 dark:border-slate-700 ${mode === 'pan' ? 'cursor-grab active:cursor-grabbing' : mode === 'text' ? 'cursor-text' : ''}`}>
              {pageImage && (
                <div 
                  ref={canvasRef}
@@ -339,6 +364,74 @@ const EditPDFTool: React.FC = () => {
                >
                  <img src={pageImage} alt="page" className="w-full h-full pointer-events-none select-none block" draggable={false} />
                  
+                 {/* Text input floating box */}
+                 {mode === 'text' && pendingTextPos && imageDims && (
+                   <div
+                     className="absolute z-30 flex flex-col gap-1"
+                     style={{
+                       left: `${(pendingTextPos.x / imageDims.width) * 100}%`,
+                       top: `${(pendingTextPos.y / imageDims.height) * 100}%`,
+                     }}
+                     onClick={e => e.stopPropagation()}
+                   >
+                     <textarea
+                       ref={textInputRef}
+                       rows={2}
+                       value={pendingText}
+                       onChange={e => setPendingText(e.target.value)}
+                       placeholder="Type here..."
+                       className="border-2 border-blue-500 rounded shadow-lg outline-none resize-none bg-white/90 dark:bg-slate-800/90 p-1"
+                       style={{ fontSize: `${fontSize * ((canvasRef.current?.getBoundingClientRect().width || imageDims.width) / imageDims.width)}px`, color, minWidth: '120px' }}
+                     />
+                     <div className="flex gap-1">
+                       <button
+                         onClick={() => {
+                           if (!pendingText.trim() || !imageDims) return;
+                           const id = uuidv4();
+                           setMods(prev => [...prev, {
+                             id,
+                             pageIndex: currentPage - 1,
+                             type: 'text',
+                             x: pendingTextPos.x,
+                             y: pendingTextPos.y,
+                             text: pendingText,
+                             size: fontSize,
+                             color,
+                           }]);
+                           setPendingTextPos(null);
+                           setPendingText('');
+                           toast.success('Text added');
+                         }}
+                         className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded font-semibold hover:bg-blue-700"
+                       >Add</button>
+                       <button
+                         onClick={() => { setPendingTextPos(null); setPendingText(''); }}
+                         className="px-2 py-0.5 bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-200 text-xs rounded font-semibold"
+                       >Cancel</button>
+                     </div>
+                   </div>
+                 )}
+
+                 {/* Committed text mods display */}
+                 {mods.filter(m => m.pageIndex === currentPage - 1 && m.type === 'text').map(m => (
+                   <div
+                     key={m.id}
+                     className={`absolute pointer-events-auto ${mode === 'select' ? 'cursor-move' : ''} ${selectedId === m.id ? 'ring-2 ring-blue-500 ring-offset-1 rounded' : ''}`}
+                     style={{
+                       left: `${(m.x / (imageDims?.width || 1)) * 100}%`,
+                       top: `${(m.y / (imageDims?.height || 1)) * 100}%`,
+                       fontSize: `${(m.size || 14) * ((canvasRef.current?.getBoundingClientRect().width || imageDims?.width || 1) / (imageDims?.width || 1))}px`,
+                       color: m.color || '#000000',
+                       whiteSpace: 'pre-wrap',
+                       lineHeight: 1.2,
+                       userSelect: 'none',
+                     }}
+                     onMouseDown={e => handleItemMouseDown(e, m.id)}
+                   >
+                     {m.text}
+                   </div>
+                 ))}
+
                  {/* Vector & Additions Layer */}
                  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${imageDims?.width || 100} ${imageDims?.height || 100}`}>
                     {mods.filter(m => m.pageIndex === currentPage - 1 && m.type === 'drawing').map(m => (
@@ -352,7 +445,7 @@ const EditPDFTool: React.FC = () => {
                     )}
                  </svg>
 
-                 {mods.filter(m => m.pageIndex === currentPage - 1 && m.type !== 'drawing').map(m => (
+                 {mods.filter(m => m.pageIndex === currentPage - 1 && m.type !== 'drawing' && m.type !== 'text').map(m => (
                    <div key={m.id} className={`absolute ${mode === 'select' ? 'cursor-move' : ''} ${selectedId === m.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`} style={{ left: `${(m.x / (imageDims?.width || 1)) * 100}%`, top: `${(m.y / (imageDims?.height || 1)) * 100}%`, width: (m.type === 'rectangle' || m.type === 'image') ? `${(m.width! / (imageDims?.width || 1)) * 100}%` : 'auto', height: (m.type === 'rectangle' || m.type === 'image') ? `${(m.height! / (imageDims?.height || 1)) * 100}%` : 'auto', backgroundColor: m.type === 'rectangle' ? m.color : 'transparent' }} onMouseDown={(e) => handleItemMouseDown(e, m.id)}>
                       {m.type === 'image' ? (
                           <img src={m.imageData} alt="signature" className="w-full h-full object-contain pointer-events-none" draggable={false} />

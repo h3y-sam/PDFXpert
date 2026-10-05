@@ -20,18 +20,8 @@ export default defineConfig(({ mode }) => {
         }
       },
       build: {
-        sourcemap: true,
-        rollupOptions: {
-          output: {
-            manualChunks: {
-              'vendor-pdf': ['pdf-lib', 'pdfjs-dist'],
-              'vendor-ocr': ['tesseract.js'],
-              'vendor-zip': ['jszip'],
-              'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-              'vendor-icons': ['lucide-react'],
-            }
-          }
-        }
+        sourcemap: false,
+        chunkSizeWarningLimit: 2000,
       }
     };
 });

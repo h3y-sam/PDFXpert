@@ -1,5 +1,5 @@
 // PDFXpert Offline Progressive Web App Service Worker
-const CACHE_NAME = 'pdfxpert-core-v1';
+const CACHE_NAME = 'pdfxpert-v2';
 const OFFLINE_FALLBACK = '/index.html';
 
 const ASSETS_TO_PRECACHE = [
@@ -12,18 +12,17 @@ const ASSETS_TO_PRECACHE = [
   '/llms.txt'
 ];
 
-// Install Event - Precache core app shell
+// Install Event
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_PRECACHE);
-    }).then(() => {
-      return self.skipWaiting();
     })
   );
 });
 
-// Activate Event - Clean up stale caches
+// Activate Event - Clean up stale caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -34,55 +33,52 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    }).then(() => {
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-// Fetch Event - Stale-While-Revalidate & Cache-First for Offline Support
+// Fetch Event - Network-First for JS assets, Stale-While-Revalidate for static assets
 self.addEventListener('fetch', (event) => {
   const request = event.request;
+  const url = new URL(request.url);
 
-  // Ignore non-GET requests or browser extension requests
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
     return;
   }
 
-  // Handle CDN / Fonts / Scripts caching
+  // Network-First for JavaScript chunks and modules to avoid dynamic import mismatches
+  if (url.pathname.endsWith('.js') || url.pathname.includes('/assets/')) {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Stale-While-Revalidate for other static assets
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Fetch in background to update cache (Stale-While-Revalidate)
-        fetch(request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, networkResponse.clone());
-            });
-          }
-        }).catch(() => {/* Offline */});
-
-        return cachedResponse;
-      }
-
-      // If not in cache, fetch from network and store in cache
-      return fetch(request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'opaque') {
-          return networkResponse;
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, networkResponse.clone());
+          });
         }
-
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, responseToCache);
-        });
-
         return networkResponse;
       }).catch(() => {
-        // Offline fallback for navigation requests
         if (request.mode === 'navigate') {
           return caches.match(OFFLINE_FALLBACK);
         }
       });
+
+      return cachedResponse || fetchPromise;
     })
   );
 });

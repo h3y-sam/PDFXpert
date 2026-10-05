@@ -20,9 +20,22 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, State
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error('[ErrorBoundary] Caught error:', error, info);
+    // If it's a dynamic import failure (new version deployed), auto refresh once
+    if (error.message?.includes('dynamically imported module') || error.message?.includes('Failed to fetch')) {
+      const lastReload = sessionStorage.getItem('pdfxpert_chunk_reload');
+      if (!lastReload || Date.now() - parseInt(lastReload) > 10000) {
+        sessionStorage.setItem('pdfxpert_chunk_reload', Date.now().toString());
+        window.location.reload();
+      }
+    }
   }
 
   handleReset = () => {
+    // Force cache busting reload on manual retry
+    if (this.state.error?.message?.includes('dynamically imported module')) {
+      window.location.reload();
+      return;
+    }
     this.setState({ hasError: false, error: null });
   };
 

@@ -44,6 +44,7 @@ const ComingSoon = lazy(() => import('./pages/tools/ComingSoon'));
 import { Toaster } from 'react-hot-toast';
 import { PremiumProvider } from './context/PremiumContext';
 import UpgradeModal from './components/UpgradeModal';
+import InstallPwaBanner from './components/InstallPwaBanner';
 
 const LoadingSpinner = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -80,6 +81,7 @@ const App: React.FC = () => {
       <PremiumProvider>
         <ScrollToTop />
         <UpgradeModal />
+        <InstallPwaBanner />
         <div className={`flex flex-col min-h-screen relative overflow-hidden transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
           
           {/* Header with Logo and Navigation */}

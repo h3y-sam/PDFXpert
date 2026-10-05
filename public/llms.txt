@@ -1,0 +1,24 @@
+# PDFXpert - 100% Offline PDF & Document Tools Suite
+
+> PDFXpert is an open, client-side web application providing 40+ document utilities including PDF merging, compression, AI semantic chat, OCR, splitting, signing, scanning, and universal format conversions running completely in-browser without server transmission.
+
+## Core Features & Tool Endpoints
+
+- [Merge PDF](https://pdfxpert.pages.dev/tools/merge): Combine multiple PDF documents into a single file with custom page rotation and re-ordering.
+- [Compress PDF](https://pdfxpert.pages.dev/tools/compress): Optimize and compress PDF documents in memory with selectable compression quality presets.
+- [Split PDF](https://pdfxpert.pages.dev/tools/split): Extract specific pages or split documents into multiple PDF ranges.
+- [AI PDF Chat](https://pdfxpert.pages.dev/tools/chat-pdf): In-browser semantic search, question-answering, and content synthesis over PDF documents.
+- [AI PDF Summarizer](https://pdfxpert.pages.dev/tools/summarize-pdf): Extract key bullet points, concise executive summaries, or comprehensive overviews.
+- [PDF Scanner](https://pdfxpert.pages.dev/tools/scan): Capture document photos via webcam or camera with document enhancement filters and compile to PDF.
+- [PDF OCR](https://pdfxpert.pages.dev/tools/ocr): Extract searchable text from scanned documents using in-browser neural OCR.
+- [PDF Converter](https://pdfxpert.pages.dev/tools/pdf-converter): Convert PDFs to Word, Excel, PowerPoint, JPG, PNG, HTML, or plain text.
+- [Protect PDF](https://pdfxpert.pages.dev/tools/protect): Encrypt PDF files with client-side standard AES password protection.
+- [Unlock PDF](https://pdfxpert.pages.dev/tools/unlock): Remove password protection from authenticated PDF files.
+- [Watermark PDF](https://pdfxpert.pages.dev/tools/watermark): Apply customizable text or image watermarks with opacity and rotation controls.
+- [Sign & Edit PDF](https://pdfxpert.pages.dev/tools/edit-pdf): Draw signatures, place text annotations, shapes, and redact sensitive information.
+
+## Security & Architecture
+
+- **Execution Model**: 100% Client-Side WebAssembly (WASM) and isolated WebWorkers.
+- **Data Privacy**: Zero cloud uploads. Documents are processed in RAM memory and never leave the user device.
+- **Licensing**: Free Community Edition and Offline Cryptographic Pro Licensing.

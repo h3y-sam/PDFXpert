@@ -1,0 +1,44 @@
+{
+  "$schema": "https://agenticresourcediscovery.org/spec/v1/schema.json",
+  "name": "PDFXpert AI & Document Agent Catalog",
+  "description": "Discoverable API & browser tools for autonomous document manipulation, AI search, and PDF conversions.",
+  "version": "1.0.0",
+  "homepage": "https://pdfxpert.pages.dev",
+  "tools": [
+    {
+      "id": "merge-pdf",
+      "name": "Merge PDF",
+      "description": "Merges multiple PDF byte arrays or files into a single output buffer.",
+      "url": "https://pdfxpert.pages.dev/tools/merge",
+      "category": "organize"
+    },
+    {
+      "id": "compress-pdf",
+      "name": "Compress PDF",
+      "description": "Compresses PDF documents using configurable raster and vector optimization.",
+      "url": "https://pdfxpert.pages.dev/tools/compress",
+      "category": "optimize"
+    },
+    {
+      "id": "ai-pdf-chat",
+      "name": "AI PDF Chat & Synthesis",
+      "description": "Semantic Q&A, summarization, and translation of PDF documents.",
+      "url": "https://pdfxpert.pages.dev/tools/chat-pdf",
+      "category": "ai"
+    },
+    {
+      "id": "pdf-scanner",
+      "name": "PDF Camera Scanner",
+      "description": "Webcam and photo capture into standardized multi-page PDF documents.",
+      "url": "https://pdfxpert.pages.dev/tools/scan",
+      "category": "scan"
+    },
+    {
+      "id": "pdf-converter",
+      "name": "Universal PDF Converter",
+      "description": "Converts PDF to Word, Excel, PPT, JPG, PNG, HTML, or plain text.",
+      "url": "https://pdfxpert.pages.dev/tools/pdf-converter",
+      "category": "convert"
+    }
+  ]
+}

@@ -63,7 +63,7 @@ const Home: React.FC = () => {
 
         <div className="relative z-10 max-w-5xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-800/60 text-rose-600 dark:text-rose-400 text-xs font-bold mb-6 animate-fade-in shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100/90 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-800/80 text-rose-800 dark:text-rose-200 text-xs font-bold mb-6 animate-fade-in shadow-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
@@ -79,25 +79,25 @@ const Home: React.FC = () => {
             </span>
           </h1>
 
-          <p className="text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+          <p className="text-base sm:text-xl text-slate-700 dark:text-slate-200 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
             Merge, split, compress, edit, convert, and chat with your documents using browser-native AI & cryptographic tools.
           </p>
 
           {/* Live Search & Quick Launch Bar */}
           <div className="max-w-2xl mx-auto mb-8">
             <div className="relative flex items-center shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-              <Search className="w-5 h-5 absolute left-4 text-slate-400" />
+              <Search className="w-5 h-5 absolute left-4 text-slate-500 dark:text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search tools (e.g., merge, compress, AI chat, scanner, sign, word)..."
-                className="w-full pl-12 pr-4 py-4 bg-transparent text-slate-900 dark:text-white text-sm sm:text-base outline-none font-medium placeholder:text-slate-400"
+                className="w-full pl-12 pr-4 py-4 bg-transparent text-slate-900 dark:text-white text-sm sm:text-base outline-none font-medium placeholder:text-slate-500 dark:placeholder:text-slate-400"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="mr-3 px-2 py-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold"
+                  className="mr-3 px-2 py-1 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 font-semibold"
                 >
                   Clear
                 </button>
@@ -105,34 +105,39 @@ const Home: React.FC = () => {
             </div>
 
             {/* Quick Action Shortcuts */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <span className="text-slate-400">Popular:</span>
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <span className="text-slate-600 dark:text-slate-400 font-bold">Popular:</span>
               <Link
                 to="/tools/merge"
+                aria-label="Quick jump to Merge PDF tool"
                 className="px-3 py-1 rounded-full bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 transition-colors"
               >
                 ⚡ Merge PDF
               </Link>
               <Link
                 to="/tools/compress"
+                aria-label="Quick jump to Compress PDF tool"
                 className="px-3 py-1 rounded-full bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 transition-colors"
               >
                 ⚡ Compress
               </Link>
               <Link
                 to="/tools/chat-pdf"
+                aria-label="Quick jump to AI Chat with PDF tool"
                 className="px-3 py-1 rounded-full bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 transition-colors"
               >
                 ⚡ AI Chat
               </Link>
               <Link
                 to="/tools/scan"
+                aria-label="Quick jump to Camera Document Scanner"
                 className="px-3 py-1 rounded-full bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 transition-colors"
               >
                 ⚡ Camera Scan
               </Link>
               <Link
                 to="/tools/edit-pdf"
+                aria-label="Quick jump to Sign and Edit PDF tool"
                 className="px-3 py-1 rounded-full bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/40 text-slate-700 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 transition-colors"
               >
                 ⚡ Sign & Edit
@@ -141,17 +146,17 @@ const Home: React.FC = () => {
           </div>
 
           {/* Trust Guarantees */}
-          <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap justify-center gap-6 sm:gap-12 text-xs font-semibold text-slate-600 dark:text-slate-400">
+          <div className="pt-8 border-t border-slate-200/80 dark:border-slate-800 flex flex-wrap justify-center gap-6 sm:gap-12 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>100% In-Browser Privacy</span>
             </div>
             <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-blue-500 shrink-0" />
+              <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span>Zero Files Sent to Servers</span>
             </div>
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-500 shrink-0" />
+              <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>Instant Client-Side Speed</span>
             </div>
           </div>
@@ -167,7 +172,7 @@ const Home: React.FC = () => {
               <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                 Explore All PDF Tools
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 mt-1">
                 Showing {filteredTools.length} tool{filteredTools.length !== 1 ? 's' : ''}
               </p>
             </div>

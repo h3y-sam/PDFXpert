@@ -88,7 +88,7 @@ const Footer: React.FC = () => {
               <h5 className="font-semibold text-white">Popular Tools & Searches</h5>
            </div>
            
-           <div className="flex flex-wrap gap-x-3 gap-y-3 text-xs mb-8">
+            <div className="flex flex-wrap gap-x-3 gap-y-3 text-xs mb-8">
               {[
                 'Merge PDF', 'Split PDF', 'Compress PDF', 'Office to PDF', 'PDF to Word', 
                 'PDF to Excel', 'PDF to PPT', 'PDF to Image', 'Image to PDF', 'Unlock PDF', 
@@ -101,24 +101,25 @@ const Footer: React.FC = () => {
                 <Link 
                   key={i} 
                   to="/tools" 
-                  className="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-full transition-all duration-200 border border-slate-800 hover:border-slate-700 hover:-translate-y-0.5"
+                  aria-label={`Explore ${tag} tool on PDFXpert`}
+                  className="bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white px-3 py-1.5 rounded-full transition-all duration-200 border border-slate-800 hover:border-slate-700 hover:-translate-y-0.5 font-medium"
                 >
                   {tag}
                 </Link>
               ))}
            </div>
 
-           <p className="text-xs text-slate-500 leading-relaxed max-w-5xl">
+           <p className="text-xs text-slate-400 leading-relaxed max-w-5xl">
              PDFXpert provides a comprehensive suite of PDF tools for all your document management needs. 
-             Whether you're looking to <strong>combine multiple PDFs</strong> into a single file, <strong>reduce file size</strong> for easy sharing, 
-             or <strong>convert documents</strong> between formats like Word, Excel, and JPG, our platform offers a fast, free, and secure solution.
+             Whether you're looking to <strong className="text-slate-200">combine multiple PDFs</strong> into a single file, <strong className="text-slate-200">reduce file size</strong> for easy sharing, 
+             or <strong className="text-slate-200">convert documents</strong> between formats like Word, Excel, and JPG, our platform offers a fast, free, and secure solution.
              Unlike other online PDF editors that upload your files to a server, we process files locally on your device using advanced WebAssembly technology, ensuring your sensitive data never leaves your computer.
              Enjoy unlimited access to premium PDF features like OCR, redaction, and digital signing without registration or software installation.
            </p>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+        <div className="border-t border-slate-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
           <div>
             &copy; {currentYear} PDFXpert. All rights reserved.
           </div>

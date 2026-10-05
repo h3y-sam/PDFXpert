@@ -144,6 +144,7 @@ const App: React.FC = () => {
                   <Route path="/tools/share-pdf" element={<EditPDFTool />} />
                   <Route path="/tools/crop-pdf" element={<CropTool />} />
                   <Route path="/tools/compare-pdf" element={<CompareTool />} />
+                  <Route path="/tools/diff-pdf" element={<CompareTool />} />
                   
                   {/* AI PDF Suite */}
                   <Route path="/tools/ai-assistant" element={<AIPDFTool />} />

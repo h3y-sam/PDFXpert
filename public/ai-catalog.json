@@ -53,6 +53,13 @@
       "description": "Batch compress, watermark, rotate, and package 10-50+ PDFs into ZIP archive.",
       "url": "https://pdfxpert.pages.dev/tools/bulk-pdf",
       "category": "automation"
+    },
+    {
+      "id": "form-builder",
+      "name": "Fillable Form Builder",
+      "description": "Create official interactive AcroForm PDF forms with text fields, checkboxes, dropdowns, and signatures.",
+      "url": "https://pdfxpert.pages.dev/tools/form-builder",
+      "category": "edit"
     }
   ]
 }

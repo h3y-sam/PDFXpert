@@ -6,11 +6,22 @@ import {
   Hash, FileJson, FileCode, Speaker, Music, Video, Database, 
   FileSpreadsheet, Monitor, FolderArchive, Wrench, Layers, Type,
   FileDigit, FileType, Code, Mic, Key, Settings, PenTool, Crop, 
-  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge, Printer, Package
+  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge, Printer, Package, CheckSquare
 } from 'lucide-react';
 import React from 'react';
 
 export const TOOLS: ToolConfig[] = [
+  // --- FORMS & EDIT TOOLS ---
+  {
+    id: ToolType.FORM_BUILDER,
+    title: 'Fillable Form Builder',
+    description: 'Create interactive PDF forms. Add text boxes, checkboxes, dropdowns, and signature fields.',
+    icon: 'CheckSquare',
+    color: 'text-blue-500',
+    path: '/tools/form-builder',
+    popular: true,
+    category: ToolCategory.EDIT
+  },
   // --- BULK & AUTOMATION TOOLS ---
   {
     id: ToolType.BULK_PDF,
@@ -393,7 +404,8 @@ export const getIcon = (name: string, className?: string) => {
     'FileOutput': <FileOutput {...props} />,
     'Gauge': <Gauge {...props} />,
     'Printer': <Printer {...props} />,
-    'Package': <Package {...props} />
+    'Package': <Package {...props} />,
+    'CheckSquare': <CheckSquare {...props} />
   };
 
   return icons[name] || <FileText {...props} />;

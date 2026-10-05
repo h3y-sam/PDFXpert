@@ -17,6 +17,7 @@
 - [Watermark PDF](https://pdfxpert.pages.dev/tools/watermark): Apply customizable text or image watermarks with opacity and rotation controls.
 - [Passport Photo Sheet Maker](https://pdfxpert.pages.dev/tools/passport-photo-maker): Tile passport and visa photos onto A4 / 4x6 sheets with cutting guides and 1-click studio printing.
 - [Batch PDF Automation](https://pdfxpert.pages.dev/tools/bulk-pdf): Process 10 to 50+ PDF files simultaneously (bulk compress, watermark, rotate) and export as ZIP package.
+- [Fillable PDF Form Builder](https://pdfxpert.pages.dev/tools/form-builder): Create official fillable AcroForm PDFs by placing text boxes, checkboxes, dropdowns, dates, and signature areas.
 - [Sign & Edit PDF](https://pdfxpert.pages.dev/tools/edit-pdf): Draw signatures, place text annotations, shapes, and redact sensitive information.
 
 ## Security & Architecture

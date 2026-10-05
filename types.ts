@@ -13,11 +13,12 @@ export enum ToolType {
   WATERMARK = 'watermark',
   PDF_TO_WORD = 'pdf-to-word',
 
-  // Images & Studio Print
+  // Images & Studio Print & Forms
   IMAGE_RESIZER = 'image-resizer',
   IMAGE_COMPRESSOR = 'image-compressor',
   PASSPORT_PHOTO_MAKER = 'passport-photo-maker',
   BULK_PDF = 'bulk-pdf',
+  FORM_BUILDER = 'form-builder',
   
   // PDF Conversions (From PDF)
   PDF_TO_CSV = 'pdf-to-csv',

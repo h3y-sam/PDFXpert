@@ -40,6 +40,7 @@ const PDFReaderTool = lazy(() => import('./pages/tools/PDFReaderTool'));
 const PDFConverterTool = lazy(() => import('./pages/tools/PDFConverterTool'));
 const PassportPhotoMakerTool = lazy(() => import('./pages/tools/PassportPhotoMakerTool'));
 const BulkPDFTool = lazy(() => import('./pages/tools/BulkPDFTool'));
+const FormBuilderTool = lazy(() => import('./pages/tools/FormBuilderTool'));
 const ComingSoon = lazy(() => import('./pages/tools/ComingSoon'));
 
 import { Toaster } from 'react-hot-toast';
@@ -132,6 +133,9 @@ const App: React.FC = () => {
                   <Route path="/tools/scan-to-pdf" element={<ImageToPDFTool />} />
 
                   {/* New Functional Tools */}
+                  <Route path="/tools/form-builder" element={<FormBuilderTool />} />
+                  <Route path="/tools/create-form" element={<FormBuilderTool />} />
+                  <Route path="/tools/fillable-form" element={<FormBuilderTool />} />
                   <Route path="/tools/edit-pdf" element={<EditPDFTool />} />
                   <Route path="/tools/sign-pdf" element={<EditPDFTool />} />
                   <Route path="/tools/redact-pdf" element={<EditPDFTool />} />

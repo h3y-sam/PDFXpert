@@ -4,25 +4,45 @@ import { Link } from 'react-router-dom';
 import { PDFFile } from '../types';
 
 interface FileUploaderProps {
-  accept: string;
+  accept?: string | Record<string, string[]>;
   multiple?: boolean;
   onFilesSelected: (files: File[]) => void;
   selectedFiles?: PDFFile[];
   onRemoveFile?: (id: string) => void;
   description?: string;
+  title?: string;
+  subtitle?: string;
   showCameraOption?: boolean;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
-  accept,
+  accept = '.pdf',
   multiple = false,
   onFilesSelected,
   selectedFiles = [],
   onRemoveFile,
-  description = 'Drag & drop files here or browse from your device',
+  description,
+  title = 'Choose Files or Drop Here',
+  subtitle,
   showCameraOption = true,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
+
+  const getAcceptString = (acc?: string | Record<string, string[]>): string => {
+    if (!acc) return '.pdf';
+    if (typeof acc === 'string') return acc;
+    return Object.values(acc).flat().join(',');
+  };
+
+  const getDisplayLabel = (acc?: string | Record<string, string[]>): string => {
+    if (!acc) return 'PDF';
+    if (typeof acc === 'string') return acc.replace(/\./g, ' ').toUpperCase().trim() || 'ANY FILE';
+    return Object.values(acc).flat().join(' ').replace(/\./g, ' ').toUpperCase().trim() || 'ANY FILE';
+  };
+
+  const computedDescription = subtitle || description || 'Drag & drop files here or browse from your device';
+  const computedAccept = getAcceptString(accept);
+  const displayLabel = getDisplayLabel(accept);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -90,15 +110,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
 
           <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white mb-1.5">
-            Choose Files or Drop Here
+            {title}
           </h3>
           <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm mb-4 leading-relaxed">
-            {description}
+            {computedDescription}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 text-[11px] font-bold rounded-lg uppercase tracking-wider">
-              {accept.replace(/\./g, ' ').toUpperCase() || 'ANY FILE'}
+              {displayLabel}
             </span>
             <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold rounded-lg flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" /> 100% Offline
@@ -109,7 +129,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <input
           type="file"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-          accept={accept}
+          accept={computedAccept}
           multiple={multiple}
           onChange={handleFileInput}
         />

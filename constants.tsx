@@ -6,11 +6,22 @@ import {
   Hash, FileJson, FileCode, Speaker, Music, Video, Database, 
   FileSpreadsheet, Monitor, FolderArchive, Wrench, Layers, Type,
   FileDigit, FileType, Code, Mic, Key, Settings, PenTool, Crop, 
-  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge, Printer
+  FileDiff, EyeOff, Archive, Smartphone, FileOutput, Gauge, Printer, Package
 } from 'lucide-react';
 import React from 'react';
 
 export const TOOLS: ToolConfig[] = [
+  // --- BULK & AUTOMATION TOOLS ---
+  {
+    id: ToolType.BULK_PDF,
+    title: 'Batch PDF Automation',
+    description: 'Process 10 to 50+ PDF files at once: bulk compress, watermark, rotate, and export as ZIP.',
+    icon: 'Package',
+    color: 'text-indigo-500',
+    path: '/tools/bulk-pdf',
+    popular: true,
+    category: ToolCategory.OPTIMIZE
+  },
   // --- STUDIO & PRINT TOOLS ---
   {
     id: ToolType.PASSPORT_PHOTO_MAKER,
@@ -381,7 +392,8 @@ export const getIcon = (name: string, className?: string) => {
     'Smartphone': <Smartphone {...props} />,
     'FileOutput': <FileOutput {...props} />,
     'Gauge': <Gauge {...props} />,
-    'Printer': <Printer {...props} />
+    'Printer': <Printer {...props} />,
+    'Package': <Package {...props} />
   };
 
   return icons[name] || <FileText {...props} />;

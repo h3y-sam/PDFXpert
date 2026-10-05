@@ -39,6 +39,7 @@ const ScannerTool = lazy(() => import('./pages/tools/ScannerTool'));
 const PDFReaderTool = lazy(() => import('./pages/tools/PDFReaderTool'));
 const PDFConverterTool = lazy(() => import('./pages/tools/PDFConverterTool'));
 const PassportPhotoMakerTool = lazy(() => import('./pages/tools/PassportPhotoMakerTool'));
+const BulkPDFTool = lazy(() => import('./pages/tools/BulkPDFTool'));
 const ComingSoon = lazy(() => import('./pages/tools/ComingSoon'));
 
 import { Toaster } from 'react-hot-toast';
@@ -152,6 +153,12 @@ const App: React.FC = () => {
                   <Route path="/tools/passport-photo-maker" element={<PassportPhotoMakerTool />} />
                   <Route path="/tools/passport-photo" element={<PassportPhotoMakerTool />} />
                   <Route path="/tools/print-photo" element={<PassportPhotoMakerTool />} />
+
+                  {/* Bulk & Batch PDF Automation */}
+                  <Route path="/tools/bulk-pdf" element={<BulkPDFTool />} />
+                  <Route path="/tools/batch-pdf" element={<BulkPDFTool />} />
+                  <Route path="/tools/bulk-compress" element={<BulkPDFTool />} />
+                  <Route path="/tools/bulk-watermark" element={<BulkPDFTool />} />
 
                   {/* PDF Scanner & Viewer */}
                   <Route path="/tools/scan" element={<ScannerTool />} />

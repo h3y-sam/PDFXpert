@@ -46,6 +46,13 @@
       "description": "Tiles passport & visa photos onto A4 / 4x6 sheets with cutting guides and 1-click studio printing.",
       "url": "https://pdfxpert.pages.dev/tools/passport-photo-maker",
       "category": "print"
+    },
+    {
+      "id": "bulk-pdf",
+      "name": "Batch PDF Automation",
+      "description": "Batch compress, watermark, rotate, and package 10-50+ PDFs into ZIP archive.",
+      "url": "https://pdfxpert.pages.dev/tools/bulk-pdf",
+      "category": "automation"
     }
   ]
 }

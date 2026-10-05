@@ -17,6 +17,7 @@ export enum ToolType {
   IMAGE_RESIZER = 'image-resizer',
   IMAGE_COMPRESSOR = 'image-compressor',
   PASSPORT_PHOTO_MAKER = 'passport-photo-maker',
+  BULK_PDF = 'bulk-pdf',
   
   // PDF Conversions (From PDF)
   PDF_TO_CSV = 'pdf-to-csv',

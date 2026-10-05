@@ -1,5 +1,5 @@
-// PDFXpert Offline Progressive Web App Service Worker
-const CACHE_NAME = 'pdfxpert-v2';
+// PDFXpert Robust Service Worker v3
+const CACHE_NAME = 'pdfxpert-v3';
 const OFFLINE_FALLBACK = '/index.html';
 
 const ASSETS_TO_PRECACHE = [
@@ -12,24 +12,25 @@ const ASSETS_TO_PRECACHE = [
   '/llms.txt'
 ];
 
-// Install Event
+// Install: Precache core shell and skip waiting immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_PRECACHE);
-    })
+    }).catch((err) => console.warn('Precache error:', err))
   );
 });
 
-// Activate Event - Clean up stale caches immediately
+// Activate: Delete ALL old caches (v1, v2) and claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) {
+            console.log('Cleaning old cache:', name);
+            return caches.delete(name);
           }
         })
       );
@@ -37,48 +38,57 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event - Network-First for JS assets, Stale-While-Revalidate for static assets
+// Fetch: Only intercept same-origin GET requests safely
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  if (request.method !== 'GET' || !request.url.startsWith('http')) {
+  // 1. Only handle same-origin GET requests; let analytics, beacons & CDNs bypass safely
+  if (request.method !== 'GET' || url.origin !== self.location.origin) {
     return;
   }
 
-  // Network-First for JavaScript chunks and modules to avoid dynamic import mismatches
-  if (url.pathname.endsWith('.js') || url.pathname.includes('/assets/')) {
+  // 2. Network-First for JS chunks and CSS assets
+  if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css') || url.pathname.includes('/assets/')) {
     event.respondWith(
       fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
           }
           return networkResponse;
         })
-        .catch(() => caches.match(request))
+        .catch(() => {
+          return caches.match(request);
+        })
     );
     return;
   }
 
-  // Stale-While-Revalidate for other static assets
+  // 3. Cache-First with immediate clone for other static assets
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, networkResponse.clone());
-          });
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      return fetch(request).then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
         }
+
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, responseToCache);
+        });
+
         return networkResponse;
       }).catch(() => {
         if (request.mode === 'navigate') {
           return caches.match(OFFLINE_FALLBACK);
         }
       });
-
-      return cachedResponse || fetchPromise;
     })
   );
 });

@@ -104,10 +104,15 @@
         },
       };
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=Sacramento&family=Dancing+Script&family=Allura&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=Sacramento&family=Dancing+Script&family=Allura&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=Sacramento&family=Dancing+Script&family=Allura&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Great+Vibes&family=Sacramento&family=Dancing+Script&family=Allura&display=swap" rel="stylesheet" />
+    </noscript>
     <style>
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-display: swap;
       }
       .glass-panel {
         background: rgba(255, 255, 255, 0.7);

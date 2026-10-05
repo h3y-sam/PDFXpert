@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -8,43 +8,48 @@ import Tools from './pages/Tools';
 import NotFound from './pages/NotFound';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// Implemented Tools
-import MergeTool from './pages/tools/MergeTool';
-import SplitTool from './pages/tools/SplitTool';
-import ImageToPDFTool from './pages/tools/ImageToPDFTool';
-import PDFToImageTool from './pages/tools/PDFToImageTool';
-import CompressTool from './pages/tools/CompressTool';
-import RotateTool from './pages/tools/RotateTool';
-import ProtectTool from './pages/tools/ProtectTool';
-import UnlockTool from './pages/tools/UnlockTool';
-import WatermarkTool from './pages/tools/WatermarkTool';
-import OCRTool from './pages/tools/OCRTool';
-import PDFToWordTool from './pages/tools/PDFToWordTool';
-import PDFToTextTool from './pages/tools/PDFToTextTool';
-import DeletePagesTool from './pages/tools/DeletePagesTool';
-import ReorderPagesTool from './pages/tools/ReorderPagesTool';
-import MetadataTool from './pages/tools/MetadataTool';
-import ImageResizerTool from './pages/tools/ImageResizerTool';
-import ImageCompressorTool from './pages/tools/ImageCompressorTool';
-import AddPageNumbersTool from './pages/tools/AddPageNumbersTool';
-import RepairTool from './pages/tools/RepairTool';
-import FlattenTool from './pages/tools/FlattenTool';
+// Lazy-Loaded Tools for Optimal First Contentful Paint & Mobile Performance
+const MergeTool = lazy(() => import('./pages/tools/MergeTool'));
+const SplitTool = lazy(() => import('./pages/tools/SplitTool'));
+const ImageToPDFTool = lazy(() => import('./pages/tools/ImageToPDFTool'));
+const PDFToImageTool = lazy(() => import('./pages/tools/PDFToImageTool'));
+const CompressTool = lazy(() => import('./pages/tools/CompressTool'));
+const RotateTool = lazy(() => import('./pages/tools/RotateTool'));
+const ProtectTool = lazy(() => import('./pages/tools/ProtectTool'));
+const UnlockTool = lazy(() => import('./pages/tools/UnlockTool'));
+const WatermarkTool = lazy(() => import('./pages/tools/WatermarkTool'));
+const OCRTool = lazy(() => import('./pages/tools/OCRTool'));
+const PDFToWordTool = lazy(() => import('./pages/tools/PDFToWordTool'));
+const PDFToTextTool = lazy(() => import('./pages/tools/PDFToTextTool'));
+const DeletePagesTool = lazy(() => import('./pages/tools/DeletePagesTool'));
+const ReorderPagesTool = lazy(() => import('./pages/tools/ReorderPagesTool'));
+const MetadataTool = lazy(() => import('./pages/tools/MetadataTool'));
+const ImageResizerTool = lazy(() => import('./pages/tools/ImageResizerTool'));
+const ImageCompressorTool = lazy(() => import('./pages/tools/ImageCompressorTool'));
+const AddPageNumbersTool = lazy(() => import('./pages/tools/AddPageNumbersTool'));
+const RepairTool = lazy(() => import('./pages/tools/RepairTool'));
+const FlattenTool = lazy(() => import('./pages/tools/FlattenTool'));
+const EditPDFTool = lazy(() => import('./pages/tools/EditPDFTool'));
+const CropTool = lazy(() => import('./pages/tools/CropTool'));
+const CompareTool = lazy(() => import('./pages/tools/CompareTool'));
+const PDFToOfficeTool = lazy(() => import('./pages/tools/PDFToOfficeTool'));
+const OfficeToPDFTool = lazy(() => import('./pages/tools/OfficeToPDFTool'));
+const AIPDFTool = lazy(() => import('./pages/tools/AIPDFTool'));
+const ScannerTool = lazy(() => import('./pages/tools/ScannerTool'));
+const PDFReaderTool = lazy(() => import('./pages/tools/PDFReaderTool'));
+const PDFConverterTool = lazy(() => import('./pages/tools/PDFConverterTool'));
+const ComingSoon = lazy(() => import('./pages/tools/ComingSoon'));
 
-// New Tools
-import EditPDFTool from './pages/tools/EditPDFTool';
-import CropTool from './pages/tools/CropTool';
-import CompareTool from './pages/tools/CompareTool';
-import PDFToOfficeTool from './pages/tools/PDFToOfficeTool';
-import OfficeToPDFTool from './pages/tools/OfficeToPDFTool';
-import AIPDFTool from './pages/tools/AIPDFTool';
-import ScannerTool from './pages/tools/ScannerTool';
-import PDFReaderTool from './pages/tools/PDFReaderTool';
-import PDFConverterTool from './pages/tools/PDFConverterTool';
-
-import ComingSoon from './pages/tools/ComingSoon';
 import { Toaster } from 'react-hot-toast';
 import { PremiumProvider } from './context/PremiumContext';
 import UpgradeModal from './components/UpgradeModal';
+
+const LoadingSpinner = () => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+    <div className="w-10 h-10 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin" />
+    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading tool...</span>
+  </div>
+);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -88,99 +93,101 @@ const App: React.FC = () => {
           {/* Main Content with top padding to account for fixed header */}
           <main className="flex-grow z-10 pt-20">
             <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/tools" element={<Tools />} />
-                
-                {/* Core Tools */}
-                <Route path="/tools/merge" element={<MergeTool />} />
-                <Route path="/tools/split" element={<SplitTool />} />
-                <Route path="/tools/img-to-pdf" element={<ImageToPDFTool />} />
-                <Route path="/tools/pdf-to-img" element={<PDFToImageTool />} />
-                <Route path="/tools/compress" element={<CompressTool />} />
-                <Route path="/tools/rotate" element={<RotateTool />} />
-                <Route path="/tools/protect" element={<ProtectTool />} />
-                <Route path="/tools/unlock" element={<UnlockTool />} />
-                <Route path="/tools/watermark" element={<WatermarkTool />} />
-                <Route path="/tools/ocr" element={<OCRTool />} />
-                <Route path="/tools/pdf-to-text" element={<PDFToTextTool />} />
-                <Route path="/tools/delete-pages" element={<DeletePagesTool />} />
-                <Route path="/tools/reorder-pages" element={<ReorderPagesTool />} />
-                <Route path="/tools/edit-metadata" element={<MetadataTool />} />
-                <Route path="/tools/image-resizer" element={<ImageResizerTool />} />
-                <Route path="/tools/image-compressor" element={<ImageCompressorTool />} />
-                <Route path="/tools/add-page-numbers" element={<AddPageNumbersTool />} />
-                <Route path="/tools/repair-pdf" element={<RepairTool />} />
-                <Route path="/tools/flatten-pdf" element={<FlattenTool />} />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/tools" element={<Tools />} />
+                  
+                  {/* Core Tools */}
+                  <Route path="/tools/merge" element={<MergeTool />} />
+                  <Route path="/tools/split" element={<SplitTool />} />
+                  <Route path="/tools/img-to-pdf" element={<ImageToPDFTool />} />
+                  <Route path="/tools/pdf-to-img" element={<PDFToImageTool />} />
+                  <Route path="/tools/compress" element={<CompressTool />} />
+                  <Route path="/tools/rotate" element={<RotateTool />} />
+                  <Route path="/tools/protect" element={<ProtectTool />} />
+                  <Route path="/tools/unlock" element={<UnlockTool />} />
+                  <Route path="/tools/watermark" element={<WatermarkTool />} />
+                  <Route path="/tools/ocr" element={<OCRTool />} />
+                  <Route path="/tools/pdf-to-text" element={<PDFToTextTool />} />
+                  <Route path="/tools/delete-pages" element={<DeletePagesTool />} />
+                  <Route path="/tools/reorder-pages" element={<ReorderPagesTool />} />
+                  <Route path="/tools/edit-metadata" element={<MetadataTool />} />
+                  <Route path="/tools/image-resizer" element={<ImageResizerTool />} />
+                  <Route path="/tools/image-compressor" element={<ImageCompressorTool />} />
+                  <Route path="/tools/add-page-numbers" element={<AddPageNumbersTool />} />
+                  <Route path="/tools/repair-pdf" element={<RepairTool />} />
+                  <Route path="/tools/flatten-pdf" element={<FlattenTool />} />
 
-                {/* Aliases */}
-                <Route path="/tools/jpg-to-pdf" element={<ImageToPDFTool />} />
-                <Route path="/tools/png-to-pdf" element={<ImageToPDFTool />} />
-                <Route path="/tools/pdf-to-png" element={<PDFToImageTool />} />
-                <Route path="/tools/extract-pages" element={<SplitTool />} />
-                <Route path="/tools/optimize-pdf" element={<CompressTool />} />
-                <Route path="/tools/scan-to-pdf" element={<ImageToPDFTool />} />
+                  {/* Aliases */}
+                  <Route path="/tools/jpg-to-pdf" element={<ImageToPDFTool />} />
+                  <Route path="/tools/png-to-pdf" element={<ImageToPDFTool />} />
+                  <Route path="/tools/pdf-to-png" element={<PDFToImageTool />} />
+                  <Route path="/tools/extract-pages" element={<SplitTool />} />
+                  <Route path="/tools/optimize-pdf" element={<CompressTool />} />
+                  <Route path="/tools/scan-to-pdf" element={<ImageToPDFTool />} />
 
-                {/* New Functional Tools */}
-                <Route path="/tools/edit-pdf" element={<EditPDFTool />} />
-                <Route path="/tools/sign-pdf" element={<EditPDFTool />} />
-                <Route path="/tools/redact-pdf" element={<EditPDFTool />} />
-                <Route path="/tools/form-filler" element={<EditPDFTool />} />
-                <Route path="/tools/request-signatures" element={<EditPDFTool />} />
-                <Route path="/tools/share-pdf" element={<EditPDFTool />} />
-                <Route path="/tools/crop-pdf" element={<CropTool />} />
-                <Route path="/tools/compare-pdf" element={<CompareTool />} />
-                
-                {/* AI PDF Suite */}
-                <Route path="/tools/ai-assistant" element={<AIPDFTool />} />
-                <Route path="/tools/chat-pdf" element={<AIPDFTool />} />
-                <Route path="/tools/summarize-pdf" element={<AIPDFTool />} />
-                <Route path="/tools/translate-pdf" element={<AIPDFTool />} />
-                <Route path="/tools/question-generator" element={<AIPDFTool />} />
-                <Route path="/tools/ai-quiz-generator" element={<AIPDFTool />} />
+                  {/* New Functional Tools */}
+                  <Route path="/tools/edit-pdf" element={<EditPDFTool />} />
+                  <Route path="/tools/sign-pdf" element={<EditPDFTool />} />
+                  <Route path="/tools/redact-pdf" element={<EditPDFTool />} />
+                  <Route path="/tools/form-filler" element={<EditPDFTool />} />
+                  <Route path="/tools/request-signatures" element={<EditPDFTool />} />
+                  <Route path="/tools/share-pdf" element={<EditPDFTool />} />
+                  <Route path="/tools/crop-pdf" element={<CropTool />} />
+                  <Route path="/tools/compare-pdf" element={<CompareTool />} />
+                  
+                  {/* AI PDF Suite */}
+                  <Route path="/tools/ai-assistant" element={<AIPDFTool />} />
+                  <Route path="/tools/chat-pdf" element={<AIPDFTool />} />
+                  <Route path="/tools/summarize-pdf" element={<AIPDFTool />} />
+                  <Route path="/tools/translate-pdf" element={<AIPDFTool />} />
+                  <Route path="/tools/question-generator" element={<AIPDFTool />} />
+                  <Route path="/tools/ai-quiz-generator" element={<AIPDFTool />} />
 
-                {/* PDF Scanner & Viewer */}
-                <Route path="/tools/scan" element={<ScannerTool />} />
-                <Route path="/tools/scan-to-pdf" element={<ScannerTool />} />
-                <Route path="/tools/pdf-scanner" element={<ScannerTool />} />
-                <Route path="/tools/pdf-reader" element={<PDFReaderTool />} />
-                <Route path="/tools/annotate-pdf" element={<PDFReaderTool />} />
-                <Route path="/tools/pdf-converter" element={<PDFConverterTool />} />
-                <Route path="/tools/converter" element={<PDFConverterTool />} />
+                  {/* PDF Scanner & Viewer */}
+                  <Route path="/tools/scan" element={<ScannerTool />} />
+                  <Route path="/tools/scan-to-pdf" element={<ScannerTool />} />
+                  <Route path="/tools/pdf-scanner" element={<ScannerTool />} />
+                  <Route path="/tools/pdf-reader" element={<PDFReaderTool />} />
+                  <Route path="/tools/annotate-pdf" element={<PDFReaderTool />} />
+                  <Route path="/tools/pdf-converter" element={<PDFConverterTool />} />
+                  <Route path="/tools/converter" element={<PDFConverterTool />} />
 
-                {/* Conversion Tools */}
-                <Route path="/tools/pdf-to-word" element={<PDFToWordTool />} />
-                <Route path="/tools/pdf-to-excel" element={<PDFToOfficeTool />} />
-                <Route path="/tools/pdf-to-ppt" element={<PDFToOfficeTool />} />
-                <Route path="/tools/pdf-to-csv" element={<PDFToOfficeTool />} />
-                <Route path="/tools/pdf-to-html" element={<PDFToOfficeTool />} />
-                <Route path="/tools/pdf-to-json" element={<PDFToOfficeTool />} />
-                
-                {/* Inverse Conversions (Text/Image/Office based) */}
-                <Route path="/tools/word-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/ppt-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/excel-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/html-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/speech-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/odt-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/ods-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/odp-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/pages-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/hwp-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/epub-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/rtf-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/txt-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/csv-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/zip-to-pdf" element={<OfficeToPDFTool />} />
-                <Route path="/tools/pdf-to-pdfa" element={<MetadataTool />} />
+                  {/* Conversion Tools */}
+                  <Route path="/tools/pdf-to-word" element={<PDFToWordTool />} />
+                  <Route path="/tools/pdf-to-excel" element={<PDFToOfficeTool />} />
+                  <Route path="/tools/pdf-to-ppt" element={<PDFToOfficeTool />} />
+                  <Route path="/tools/pdf-to-csv" element={<PDFToOfficeTool />} />
+                  <Route path="/tools/pdf-to-html" element={<PDFToOfficeTool />} />
+                  <Route path="/tools/pdf-to-json" element={<PDFToOfficeTool />} />
+                  
+                  {/* Inverse Conversions (Text/Image/Office based) */}
+                  <Route path="/tools/word-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/ppt-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/excel-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/html-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/speech-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/odt-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/ods-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/odp-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/pages-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/hwp-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/epub-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/rtf-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/txt-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/csv-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/zip-to-pdf" element={<OfficeToPDFTool />} />
+                  <Route path="/tools/pdf-to-pdfa" element={<MetadataTool />} />
 
-                {/* Still genuinely coming soon or requiring heavy backend */}
-                <Route path="/tools/youtube-to-mp3" element={<ComingSoon />} />
-                <Route path="/tools/pdf-to-audio" element={<ComingSoon />} />
-                
-                <Route path="/tools/*" element={<NotFound />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  {/* Still genuinely coming soon or requiring heavy backend */}
+                  <Route path="/tools/youtube-to-mp3" element={<ComingSoon />} />
+                  <Route path="/tools/pdf-to-audio" element={<ComingSoon />} />
+                  
+                  <Route path="/tools/*" element={<NotFound />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
             </ErrorBoundary>
           </main>
           

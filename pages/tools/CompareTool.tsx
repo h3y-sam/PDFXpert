@@ -213,7 +213,7 @@ const CompareTool: React.FC = () => {
     }
   }, [pdf1Bytes, pdf2Bytes, currentPage, runComparison]);
 
-  // Handle Dragging Slider
+  // Handle Dragging Slider (Mouse & Touch responsive for mobile & tablets)
   const handleSliderMove = (clientX: number) => {
     if (!sliderContainerRef.current) return;
     const rect = sliderContainerRef.current.getBoundingClientRect();
@@ -230,6 +230,19 @@ const CompareTool: React.FC = () => {
     if (isDraggingSlider) handleSliderMove(e.clientX);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDraggingSlider(true);
+      handleSliderMove(e.touches[0].clientX);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDraggingSlider && e.touches.length === 1) {
+      handleSliderMove(e.touches[0].clientX);
+    }
+  };
+
   const handleMouseUp = () => setIsDraggingSlider(false);
 
   const maxPages = Math.max(pages1, pages2);
@@ -238,6 +251,7 @@ const CompareTool: React.FC = () => {
     <ToolContainer
       title="Visual Side-by-Side PDF Diff & Comparison"
       description="Compare two PDF documents side-by-side with interactive slider, visual pixel diff overlay (red/green highlights), and text changes. 100% offline."
+      maxWidth="6xl"
     >
       {(!pdf1Bytes || !pdf2Bytes) ? (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -384,7 +398,10 @@ const CompareTool: React.FC = () => {
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
-                    className="relative max-w-2xl w-full shadow-2xl rounded-2xl overflow-hidden cursor-ew-resize select-none bg-white border border-slate-300"
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleMouseUp}
+                    className="relative max-w-2xl w-full shadow-2xl rounded-2xl overflow-hidden cursor-ew-resize select-none bg-white border border-slate-300 touch-none"
                   >
                     {/* Background Image (Modified Doc 2) */}
                     <img src={img2DataUrl} alt="Document 2" className="w-full h-auto block pointer-events-none" />

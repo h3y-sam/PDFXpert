@@ -86,8 +86,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         className={`
           relative group cursor-pointer
           flex flex-col items-center justify-center
-          w-full h-72 md:h-88
-          rounded-3xl border-2 border-dashed
+          w-full min-h-[210px] sm:min-h-[260px] md:h-80
+          rounded-2xl sm:rounded-3xl border-2 border-dashed
           transition-all duration-300
           bg-white dark:bg-slate-800/80
           ${
@@ -97,22 +97,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           }
         `}
       >
-        <div className="z-10 flex flex-col items-center text-center p-6 pointer-events-none max-w-md">
+        <div className="z-10 flex flex-col items-center text-center p-4 sm:p-6 pointer-events-none max-w-md">
           {/* Upload Icon with Gradient Ring */}
           <div
-            className={`w-16 h-16 rounded-3xl flex items-center justify-center mb-4 transition-all duration-300 shadow-sm ${
+            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-3 sm:mb-4 transition-all duration-300 shadow-sm ${
               isDragging
                 ? 'bg-rose-500 text-white scale-110'
                 : 'bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 group-hover:bg-gradient-to-r group-hover:from-rose-500 group-hover:to-orange-500 group-hover:text-white group-hover:scale-105'
             }`}
           >
-            <Upload className="w-8 h-8" />
+            <Upload className="w-6 h-6 sm:w-8 sm:h-8" />
           </div>
 
-          <h3 className="text-lg md:text-xl font-bold text-slate-800 dark:text-white mb-1.5">
+          <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-white mb-1">
             {title}
           </h3>
-          <p className="text-slate-500 dark:text-slate-400 text-xs md:text-sm mb-4 leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed">
             {computedDescription}
           </p>
 

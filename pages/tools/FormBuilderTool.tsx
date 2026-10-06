@@ -261,6 +261,7 @@ const FormBuilderTool: React.FC = () => {
     <ToolContainer
       title="Interactive Fillable PDF Form Builder"
       description="Create official fillable PDF forms. Drag and drop text fields, checkboxes, dropdowns, dates, and signature boxes. 100% offline AcroForm generator."
+      maxWidth="6xl"
     >
       {!pdfBytes ? (
         <div className="max-w-2xl mx-auto space-y-6">
@@ -469,11 +470,11 @@ const FormBuilderTool: React.FC = () => {
             </div>
 
             {/* Interactive Document Workspace */}
-            <div className="relative flex justify-center p-4 bg-slate-100 dark:bg-slate-950 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-inner overflow-hidden overflow-y-auto max-h-[640px]">
+            <div className="relative flex justify-center p-2 sm:p-4 bg-slate-100 dark:bg-slate-950 rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-inner overflow-x-auto overflow-y-auto max-h-[520px] sm:max-h-[640px]">
               <div 
                 ref={overlayRef}
                 onClick={handlePageClick}
-                className="relative inline-block shadow-2xl bg-white select-none cursor-crosshair"
+                className="relative inline-block shadow-2xl bg-white select-none cursor-crosshair min-w-[320px] sm:min-w-0"
               >
                 <canvas ref={canvasRef} className="block w-full h-auto" />
 

@@ -214,6 +214,7 @@ const BulkPDFTool: React.FC = () => {
     <ToolContainer
       title="Batch Multi-File PDF Automation"
       description="Process 10 to 50+ PDF files at once. Bulk compress, bulk watermark, bulk rotate, and download all as a ZIP package in seconds. 100% offline."
+      maxWidth="6xl"
     >
       {items.length === 0 ? (
         <div className="max-w-3xl mx-auto space-y-6">

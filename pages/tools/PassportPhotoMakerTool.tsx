@@ -244,7 +244,7 @@ const PassportPhotoMakerTool: React.FC = () => {
     }
   }, [imageSrc, renderPrintSheet]);
 
-  // Pan controls
+  // Pan controls (Mouse & Touch responsive for mobile & tablets)
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsDragging(true);
     setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
@@ -255,6 +255,23 @@ const PassportPhotoMakerTool: React.FC = () => {
     setPanOffset({
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y,
+    });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      const touch = e.touches[0];
+      setDragStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    setPanOffset({
+      x: touch.clientX - dragStart.x,
+      y: touch.clientY - dragStart.y,
     });
   };
 
@@ -358,6 +375,7 @@ const PassportPhotoMakerTool: React.FC = () => {
     <ToolContainer
       title="Passport Photo Sheet & Studio Print Maker"
       description="Create print-ready passport, visa, and ID photo sheets tiled on A4 or 4x6 photo paper with cut borders. 100% offline & studio-quality."
+      maxWidth="6xl"
     >
       {!file ? (
         <div className="max-w-2xl mx-auto space-y-6">
@@ -529,7 +547,10 @@ const PassportPhotoMakerTool: React.FC = () => {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseUp}
-                  className="relative overflow-hidden cursor-move border-2 border-rose-500 rounded-2xl shadow-inner bg-slate-100 dark:bg-slate-900 flex items-center justify-center select-none"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleMouseUp}
+                  className="relative overflow-hidden cursor-move border-2 border-rose-500 rounded-2xl shadow-inner bg-slate-100 dark:bg-slate-900 flex items-center justify-center select-none touch-none"
                   style={{
                     width: `${selectedPhotoSize.widthMm * 3.5}px`,
                     height: `${selectedPhotoSize.heightMm * 3.5}px`,
@@ -683,7 +704,7 @@ const PassportPhotoMakerTool: React.FC = () => {
               </div>
 
               {/* Visual Sheet Canvas */}
-              <div className="w-full flex justify-center p-4 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner overflow-hidden max-h-[580px] overflow-y-auto">
+              <div className="w-full flex justify-center p-2 sm:p-4 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner overflow-x-auto overflow-y-auto max-h-[480px] sm:max-h-[580px] touch-auto">
                 <canvas
                   ref={canvasRef}
                   className="max-w-full h-auto object-contain shadow-2xl rounded-sm border border-slate-300"
